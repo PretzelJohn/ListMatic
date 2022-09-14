@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="/static/css/splash.css">
+
+    <fieldset class="fieldset">
+        <h1>Welcome to <strong>OwlAttendance</strong>!</h1><hr><br>
+        <legend>Please sign in</legend>
+
+        {% include 'form.html' %}<br><br>
+
+        {% include 'messages.html' %}
+    </fieldset>
+{% endblock %}
