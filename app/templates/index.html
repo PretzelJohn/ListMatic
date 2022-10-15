@@ -1,8 +1,52 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+
+{% block header %}
+    {% include 'components/navbar.html' %}<br>
+    {% include 'components/messages.html' %}
+{% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="/static/css/splash.css">
-    <div class="fieldset">
-        <h1>Hello, world!</h1>
-    </div>
+    <link rel="stylesheet" type="text/css" href="/static/css/table.css">
+
+    <fieldset class="center table-responsive">
+        <h1>Hello, {{ current_user.username }}!</h1><br>
+        <p>You have {{ lists|length }} list(s):</p>
+
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                {% if category == 'All' %}
+                    <a class="nav-link active" href="/">All</a>
+                {% else %}
+                    <a class="nav-link" href="/">All</a>
+                {% endif %}
+            </li>
+            {% for cat in categories %}
+                <li class="nav-item">
+                    {% if cat.category == category %}
+                        <a class="nav-link active" href="/{{ cat.category }}">{{ cat.category }}</a>
+                    {% else %}
+                        <a class="nav-link" href="/{{ cat.category }}">{{ cat.category }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+        <table class="table align-top">
+            <tr>
+                <th>Id</th>
+                <th>Created</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Options</th>
+            </tr>
+        {% for list in lists %}
+            <tr>
+                <td>{{ list.list_id }}</td>
+                <td>{{ list.created }}</td>
+                <td>{{ list.title }}</td>
+                <td>{{ list.category }}</td>
+                <td><a class="btn btn-primary" href="/{{list.category}}/{{ list.list_id }}">View</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </fieldset>
 {% endblock %}

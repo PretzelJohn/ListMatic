@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header %}
+    {% include 'components/navbar.html' %}<br>
+    {% include 'components/messages.html' %}
+{% endblock %}
+
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="/css/table.css">
+
+    <fieldset class="center">
+        <h1>{{ list.title }}</h1>
+        <p>Your role: {{ role }}</p>
+
+        {% for item in list.content %}
+            <input type="text" value="{{ item }}" style="border: none;"/>
+        {% endfor %}
+    </fieldset>
+{% endblock %}

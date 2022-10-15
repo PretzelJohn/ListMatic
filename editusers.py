@@ -12,11 +12,12 @@ if __name__ == '__main__':
         for user in users:
             print("{:>5}: {}".format(user.user_id, user.username))
     elif len(sys.argv) == 3 and sys.argv[1] == "del":
-        id = sys.argv[2]
-        db.session.query(Users).filter(Users.user_id == id).delete()
+        uid = sys.argv[2]
+        db.session.query(Users).filter(Users.user_id == uid).delete()
         db.session.commit()
     elif len(sys.argv) == 4 and sys.argv[1] == "add":
-        u = Users(username=sys.argv[2])
+        u = Users()
+        u.set_username(sys.argv[2])
         u.set_password(sys.argv[3])
         db.session.add(u)
         db.session.commit()

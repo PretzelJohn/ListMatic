@@ -5,12 +5,9 @@
 
     <fieldset class="fieldset">
         <h1>Welcome to <strong>ListMatic</strong>!</h1><hr><br>
-        <legend>Please sign in</legend>
+        <legend>Create an account</legend>
 
         {% include 'components/form.html' %}<br><br>
-
-        <p>Need an account? <a class="link-primary" href="{{ url_for('register') }}">Sign up</a></p>
-        <!--a class="link-primary" href="#">Forgot password?</a-->
 
         {% include 'components/messages.html' %}
     </fieldset>
