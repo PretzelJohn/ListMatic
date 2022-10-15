@@ -4,6 +4,7 @@
     <data-source source="LOCAL" name="AWS RDS" uuid="4503a942-6b52-4c3f-a14e-1f8da38dde5e">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://listmatic.cmgfix00nkkz.us-east-2.rds.amazonaws.com:3306/listmatic</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>

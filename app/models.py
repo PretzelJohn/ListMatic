@@ -20,12 +20,13 @@ roles = db.Table(
 class Users(db.Model, UserMixin):
     user_id = db.Column(db.INT, name='user_id', primary_key=True, autoincrement=True)
     username = db.Column(db.VARCHAR(25), name='username', nullable=False, unique=True, index=True)
-    password_hash = db.Column(db.CHAR(100), name='password', nullable=False)
+    password_hash = db.Column(db.CHAR(102), name='password', nullable=False)
     lists = db.relationship('Lists', secondary=roles, back_populates='users')
 
     def set_username(self, username):
         if not get_user(username):
             self.username = username
+            db.session.commit()
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
