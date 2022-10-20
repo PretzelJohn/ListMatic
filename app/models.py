@@ -21,6 +21,7 @@ class Users(db.Model, UserMixin):
     user_id = db.Column(db.INT, name='user_id', primary_key=True, autoincrement=True)
     username = db.Column(db.VARCHAR(25), name='username', nullable=False, unique=True, index=True)
     password_hash = db.Column(db.CHAR(102), name='password', nullable=False)
+    filename = db.Column(db.VARCHAR(50), name='filename', nullable=False, default='default_profile.jpg')
     lists = db.relationship('Lists', secondary=roles, back_populates='users')
 
     def set_username(self, username):
@@ -32,11 +33,19 @@ class Users(db.Model, UserMixin):
         self.password_hash = generate_password_hash(password)
         db.session.commit()
 
+    def set_filename(self, filename):
+        self.filename = filename
+        db.session.commit()
+
     def check_password(self, password):
         return check_password_hash(str(self.password_hash).rstrip(), password)
 
     def get_id(self):
         return self.user_id
+
+    def remove(self):
+        db.session.delete(self)
+        db.session.commit()
 
 
 class Lists(db.Model):

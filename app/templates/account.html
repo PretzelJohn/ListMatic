@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block header %}
+    {% include 'components/navbar.html' %}<br xmlns="http://www.w3.org/1999/html">
+    {% include 'components/messages.html' %}
+{% endblock %}
+
+{% block content %}
+    <h1>Your account</h1>
+    <h2>Profile picture</h2>
+    <div class="d-flex flex-column center" style="width: 256px;">
+        <a class="position-relative mb-2" href="" data-bs-toggle="modal" data-bs-target="#editModal">
+            <img class="border d-block" src="https://listmatic.s3.us-east-2.amazonaws.com/{{ current_user.filename }}" width="256px" height="256px" alt="Your profile picture"/>
+            <div class="edit-profile d-flex justify-content-center align-items-center">
+                <div class="text-white fs-5 text-center">Edit</div>
+            </div>
+        </a>
+        {% if current_user.filename != 'default_profile.jpg' %}
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#removeModal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+            </svg>
+            Remove
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- UPDATE PROFILE PICTURE -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-start">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Change profile picture</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ url_for('profile_edit') }}" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <p>Upload a new profile picture here. Valid types are JPG and PNG.</p>
+                        <input type="file" class="btn" name="file"/>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Submit"/>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div><br><br>
+
+    <!-- DELETE PROFILE PICTURE -->
+    <div class="modal fade" id="removeModal" tabindex="-1" role="dialog" aria-labelledby="removeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-start">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeModalLabel">Delete profile picture</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to <strong>delete your profile picture</strong>? Your profile will use the default profile picture again.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{{ url_for('profile_delete') }}">
+                        <input type="submit" class="btn btn-danger" value="Confirm"/>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE ACCOUNT -->
+    <h2>Account settings</h2>
+    <input type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" value="Delete account"/>
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content text-start">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Delete account</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to <strong>delete your account</strong>? This action is irreversible, and someone else might take your username.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" action="{{ url_for('account_delete') }}">
+                        <input type="submit" class="btn btn-danger" value="Confirm"/>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

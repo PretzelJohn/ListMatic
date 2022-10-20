@@ -14,3 +14,4 @@ Werkzeug~=2.2.2
 WTForms~=3.0.1
 email-validator~=1.2.1
 mysqlclient~=2.1.1
+boto3~=1.24.94

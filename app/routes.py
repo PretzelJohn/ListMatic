@@ -1,13 +1,14 @@
+import uuid
+
 from app import app
 from app.forms import LoginForm, RegisterForm
 from app.errors import not_found_error
 from app.models import *
+from app.s3 import s3_upload, s3_delete
 
 from flask import render_template, flash, redirect, url_for, request, send_file, make_response
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
-
-import os
 
 
 # ---------- Website ----------
@@ -22,6 +23,7 @@ def index():
     return render_template('index.html', title='Home', lists=lists, categories=categories, category='All')
 
 
+# Shows lists in the given category
 @app.route('/<category>')
 @login_required
 def category_view(category):
@@ -30,6 +32,7 @@ def category_view(category):
     return render_template('index.html', title='Home', lists=lists, categories=categories, category=category)
 
 
+# Shows a specific list
 @app.route('/<category>/<list_id>')
 @login_required
 def list_view(category, list_id):
@@ -46,10 +49,68 @@ def list_view(category, list_id):
     return render_template('list.html', list=list_obj, role=role_obj.role)
 
 
-# Browser icon
-@app.route('/favicon.ico')
-def favicon():
-    return ''
+# ---------- User account ----------
+# Returns the file's extension (jpg, png)
+def get_extension(filename):
+    return filename.rsplit('.', 1)[1].lower()
+
+
+# Returns true if the image file is valid
+def validate_image(filename):
+    return '.' in filename and get_extension(filename) in ['jpg', 'png']
+
+
+# Returns the account info page
+@app.route('/account', methods=['GET'])
+@login_required
+def account():
+    return render_template('account.html')
+
+
+# Handles profile picture updates
+@app.route('/profile/update', methods=['POST'])
+@login_required
+def profile_edit():
+    if 'file' not in request.files:
+        flash('No file selected!', 'danger')
+
+    file = request.files['file']
+    filename = file.filename
+    mimetype = request.mimetype
+
+    if not file or not filename:
+        flash('No file selected!', 'danger')
+    elif validate_image(filename):
+        if current_user.filename != 'default_profile.jpg':
+            s3_delete(current_user.filename)
+
+        filename = uuid.uuid4().hex + '.' + get_extension(filename)
+        current_user.set_filename(filename)
+        s3_upload(file, current_user.filename, mimetype)
+        flash('Updated your profile picture successfully!', 'success')
+    else:
+        flash('That file type is not allowed! Please upload a valid .jpg or .png image.', 'danger')
+    return redirect(url_for('account'))
+
+
+# Handles profile picture deletes
+@app.route('/profile/delete', methods=['POST'])
+@login_required
+def profile_delete():
+    if current_user.filename != 'default_profile.jpg':
+        s3_delete(current_user.filename)
+    current_user.set_filename('default_profile.jpg')
+    flash('Removed your profile picture successfully!', 'success')
+    return redirect(url_for('account'))
+
+
+# Handles account deletes
+@app.route('/account/delete', methods=['POST'])
+@login_required
+def account_delete():
+    current_user.remove()
+    flash('Your account was deleted successfully!', 'success')
+    return redirect(url_for('login'))
 
 
 # ---------- User login ----------
@@ -65,7 +126,7 @@ def login():
 
         # If the username or password is invalid, send a message
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password.')
+            flash('Invalid username or password.', 'danger')
             return redirect(url_for('login'))
 
         # If successful, log the user in
@@ -100,19 +161,19 @@ def register():
 
         # If the username has been taken, send a message
         if user:
-            flash('That username already exists!')
+            flash('That username already exists!', 'danger')
             return redirect(url_for('register'))
 
         # If the password doesn't match, send a message
         if form.password.data != form.confirm.data:
-            flash('Your password doesn\'t match. Please try again.')
+            flash('The passwords don\'t match. Please try again.', 'danger')
             return redirect(url_for('register'))
 
         # If successful, create a new account
         add_user(form.username.data, form.password.data)
 
         # Redirect the user to the login page
-        flash('Account created successfully!')
+        flash('Account created successfully!', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html', title='Create Account', form=form)

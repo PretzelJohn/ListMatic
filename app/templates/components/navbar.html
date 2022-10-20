@@ -11,9 +11,12 @@
         <div class="collapse navbar-collapse mt-1" id="navbar">
             <div class="navbar-nav">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ current_user.username }}</a>
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="me-2" src="https://listmatic.s3.us-east-2.amazonaws.com/{{ current_user.filename }}" width="32px" height="32px"/>
+                        {{ current_user.username }}
+                    </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="#">Account</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('account') }}">Account</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('logout') }}">Sign out</a></li>
                     </ul>
                 </li>
