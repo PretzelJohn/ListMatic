@@ -20,7 +20,7 @@ The web application is hosted on AWS, using the following services:
 Getting Started
 ---------------
 1.  Clone the GitHub repo into a convenient location<br>
-    `git clone https://github.com/PretzelJohn/SWE4633.git ListMatic`
+    `git clone https://github.com/PretzelJohn/ListMatic.git ListMatic`
     
 2.  Install Python 3<br>
     https://www.python.org/downloads/
