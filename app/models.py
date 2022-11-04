@@ -25,7 +25,7 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.VARCHAR(25), name='username', nullable=False, unique=True, index=True)
     password_hash = db.Column(db.CHAR(102), name='password', nullable=False)
     filename = db.Column(db.VARCHAR(50), name='filename', nullable=False, default='default_profile.jpg')
-    lists = db.relationship("Roles", back_populates='user')
+    lists = db.relationship("Roles", back_populates='user', cascade="all, delete-orphan")
 
     def set_username(self, username):
         if not get_user(username):
@@ -58,7 +58,7 @@ class Lists(db.Model):
     title = db.Column(db.VARCHAR(25), name='title', nullable=False)
     content = db.Column(db.JSON, name='content', nullable=False)
     category = db.Column(db.VARCHAR(25), name='category', nullable=False, default='default')
-    users = db.relationship("Roles", back_populates='list')
+    users = db.relationship("Roles", back_populates='list', cascade="all, delete-orphan")
 
 
 # ---------- API ----------
