@@ -1,19 +1,49 @@
 {% extends "base.html" %}
 
 {% block header %}
-    {% include 'components/navbar.html' %}<br>
+    {% include 'components/navbar_user.html' %}
     {% include 'components/messages.html' %}
 {% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="/css/table.css">
+    <div class="container-fluid">
+        <div class="row text-start link-back">
+			<a class="link fw-bold text-navy fs-5 fs-6" href="{{ url_for('dashboard') }}">◄ Back to home</a>
+		</div>
+        <div class="row">
+            <div class="col-7">
+                <form class="w-100">
+                    <input class="fs-1 text-navy w-100" type="text" placeholder="Title" value="{{ list.title }}"/>
+                </form>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-4 text-center">
+                {% if role in "owner" %}
+                    <button class="btn btn-lg btn-navy text-white w-75 fs-6 fs-7 arial" type="button" data-bs-toggle="modal" data-bs-target="#inviteModal">
+                        Invite Friends & Family
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <form class="w-100">
+                    {% if not list.content %}
+                        <input class="form-control" type="text" placeholder="List Item" value="" style="border: none;"/>
+                    {% endif %}
+                    {% for item in list.content %}
+                        <input class="form-control" type="text" placeholder="List Item" value="{{ item }}" style="border: none;"/>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="col-1"></div>
+            <div class="col-4 text-center">
+                <p>Your role: {{ role }}</p>
+            </div>
+        </div>
+    </div>
 
-    <fieldset class="center">
-        <h1>{{ list.title }}</h1>
-        <p>Your role: {{ role }}</p>
-
-        {% for item in list.content %}
-            <input type="text" value="{{ item }}" style="border: none;"/>
-        {% endfor %}
-    </fieldset>
+    {% with id="inviteModal", header="Manage access", body="", submit_action="", submit_color="primary", submit_text="Submit" %}
+		{% include 'components/modal.html' %}
+	{% endwith %}
 {% endblock %}

@@ -1,0 +1,22 @@
+<!-- Reusable modal. Params: id, header, body, submit_action, submit_color, submit_text -->
+<div class="modal fade" id="{{ id }}" tabindex="-1" role="dialog" aria-labelledby="{{ id }}Label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content text-start">
+            <div class="modal-header">
+                <h5 class="modal-title" id="{{ id }}Label">{{ header }}</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{ submit_action }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {{ body | safe }}
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-{{ submit_color }}" value="{{ submit_text }}"/>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

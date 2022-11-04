@@ -1,7 +1,7 @@
 import uuid
 
 from app import app
-from app.forms import LoginForm, RegisterForm
+from app.forms import LoginForm, RegisterForm, RenameForm
 from app.errors import not_found_error
 from app.models import *
 from app.s3 import s3_upload, s3_delete
@@ -12,28 +12,28 @@ from werkzeug.urls import url_parse
 
 
 # ---------- Website ----------
-# Homepage - shows all lists?
+# Landing page
 @app.route('/')
 def index():
+    return render_template('index.html')
+
+
+# Dashboard - shows all lists
+@app.route('/dashboard')
+@login_required
+def dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
     categories = get_categories(current_user)
+    if not categories:
+        categories = [("Default", )]
     lists = get_lists(current_user)
-    return render_template('index.html', title='Home', lists=lists, categories=categories, category='All')
-
-
-# Shows lists in the given category
-@app.route('/<category>')
-@login_required
-def category_view(category):
-    categories = get_categories(current_user)
-    lists = get_lists(current_user, category)
-    return render_template('index.html', title='Home', lists=lists, categories=categories, category=category)
+    return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists)
 
 
 # Shows a specific list
-@app.route('/<category>/<list_id>')
+@app.route('/dashboard/<category>/<list_id>')
 @login_required
 def list_view(category, list_id):
     role_obj = get_role(current_user, list_id)
@@ -49,6 +49,14 @@ def list_view(category, list_id):
     return render_template('list.html', list=list_obj, role=role_obj.role)
 
 
+@app.route('/create/<category>', methods=['GET'])
+@login_required
+def list_create(category):
+    flash('You have created a new list!', 'success')
+    list_id = add_list(current_user, category)
+    return redirect(url_for('list_view', category=category, list_id=list_id))
+
+
 # ---------- User account ----------
 # Returns the file's extension (jpg, png)
 def get_extension(filename):
@@ -61,10 +69,35 @@ def validate_image(filename):
 
 
 # Returns the account info page
-@app.route('/account', methods=['GET'])
+@app.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('account.html')
+    # Creates a new registration form
+    form = RenameForm()
+
+    # Validates registration form on POST only
+    if form.validate_on_submit():
+        # If the username has been taken, send a message
+        if get_user(form.username.data):
+            flash('That username already exists!', 'danger')
+            return redirect(url_for('account'))
+
+        # If successful, change the username
+        current_user.set_username(form.username.data)
+
+        # Redirect the user to the login page
+        flash('Username updated successfully!', 'success')
+
+    return render_template('account.html', form=form)
+
+
+# Handles account deletes
+@app.route('/account/delete', methods=['POST'])
+@login_required
+def account_delete():
+    current_user.remove()
+    flash('Your account was deleted successfully!', 'success')
+    return redirect(url_for('login'))
 
 
 # Handles profile picture updates
@@ -90,6 +123,7 @@ def profile_edit():
         flash('Updated your profile picture successfully!', 'success')
     else:
         flash('That file type is not allowed! Please upload a valid .jpg or .png image.', 'danger')
+
     return redirect(url_for('account'))
 
 
@@ -102,15 +136,6 @@ def profile_delete():
     current_user.set_filename('default_profile.jpg')
     flash('Removed your profile picture successfully!', 'success')
     return redirect(url_for('account'))
-
-
-# Handles account deletes
-@app.route('/account/delete', methods=['POST'])
-@login_required
-def account_delete():
-    current_user.remove()
-    flash('Your account was deleted successfully!', 'success')
-    return redirect(url_for('login'))
 
 
 # ---------- User login ----------
@@ -135,7 +160,7 @@ def login():
         # Redirect the user to the page they wanted to reach
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '' or next_page == '/logout':
-            next_page = url_for('index')
+            next_page = url_for('dashboard')
         return redirect(next_page)
 
     # Return the content of login.html on GET only
@@ -149,18 +174,15 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     # Creates a new registration form
     form = RegisterForm()
 
     # Validates registration form on POST only
     if form.validate_on_submit():
-        # Finds the username from the database
-        user = get_user(form.username.data)
-
         # If the username has been taken, send a message
-        if user:
+        if get_user(form.username.data):
             flash('That username already exists!', 'danger')
             return redirect(url_for('register'))
 

@@ -1,6 +1,8 @@
-{% for category, message in get_flashed_messages(with_categories=true) %}
-    <div class="center alert alert-{{ category }} alert-dismissible" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-{% endfor %}
+<div class="container-fluid">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="center alert alert-{{ category }} alert-dismissible mt-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+</div>

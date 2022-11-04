@@ -1,17 +1,55 @@
 {% extends "base.html" %}
 
+{% block header %}
+    <style rel="text/css">
+        body {
+            background-color: #023859;
+        }
+    </style>
+
+    {% with active=1 %}
+        {% include 'components/navbar.html' %}
+    {% endwith %}
+    {% include 'components/messages.html' %}
+{% endblock %}
+
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="/static/css/splash.css">
+    <!-- Background image -->
+	<div class="position-absolute d-xxxl-block" style="right: 9.1%; bottom: 7.8%; z-index: -1;">
+		<img class="img-fluid" src="/static/img/undraw_to_do_re_jaef.svg" width="656px" height="361px">
+	</div>
 
-    <fieldset class="fieldset">
-        <h1>Welcome to <strong>ListMatic</strong>!</h1><hr><br>
-        <legend>Please sign in</legend>
+    <!-- Centered form -->
+    <div class="center-outer">
+        <div class="center-inner">
+            <div class="text-white form">
+                <h1 class="fs-1 mt-5 mb-4">Sign In</h1>
+                <p class="fs-5 fs-6 mb-4">Login to manage your account</p>
 
-        {% include 'components/form.html' %}<br><br>
+                <form class="text-start" method="post" action="">
+                    {{ form.csrf_token }}
+                    <div class="mb-2 fs-6 arial">
+                        {{ form.username.label(class_="form-label fw-bold mb-1") }}
+                        {{ form.username(class_="form-control") }}
+                    </div>
+                    <div class="mb-4 fs-6 arial">
+                        {{ form.password.label(class_="form-label fw-bold mb-1") }}
+                        {{ form.password(class_="form-control") }}
+                    </div>
+                    <div class="mb-4 fs-6 form-check clearfix">
+                        <div class="float-start">
+                            {{ form.remember(class_="form-check-input") }}
+                            {{ form.remember.label(class_="form-check-label", for="rememberMe") }}
+                        </div>
+                        <a class="link-green float-end" href="#">Forgot password?</a>
+                    </div>
+                    <div class="mb-4 d-grid gap-2">
+                        {{ form.submit(class_="btn btn-green btn-lg text-white fw-bold fs-6 fs-7 arial") }}
+                    </div>
+                </form>
 
-        <p>Need an account? <a class="link-primary" href="{{ url_for('register') }}">Sign up</a></p>
-        <!--a class="link-primary" href="#">Forgot password?</a-->
-
-        {% include 'components/messages.html' %}
-    </fieldset>
+                <p class="text-center fs-5 fs-6">Don't have an account?&nbsp;&nbsp;<a class="link link-green fw-bold" href="{{ url_for('register') }}">Sign up</a></p>
+            </div>
+        </div>
+    </div>
 {% endblock %}

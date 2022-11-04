@@ -1,0 +1,20 @@
+/* Dashboard */
+.navbar {
+    border-bottom: 1px solid #00bfa6;
+}
+
+.category {
+	padding: 15px 0;
+}
+
+.link-card {
+    width: 375px;
+    height: 166px;
+    margin-top: 10px;
+    margin-right: 47px;
+    box-sizing: border-box;
+}
+.card {
+    width: 100%;
+    height: 100%;
+}

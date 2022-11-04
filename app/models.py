@@ -1,5 +1,6 @@
+from sqlalchemy.sql import functions
+
 from app import db, login
-from datetime import date
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -9,20 +10,22 @@ def load_user(uid):
     return Users.query.get(int(uid))
 
 
-roles = db.Table(
-    "roles",
-    db.Column('user_id', db.INT, db.ForeignKey('users.user_id'), primary_key=True),
-    db.Column('list_id', db.INT, db.ForeignKey('lists.list_id'), primary_key=True),
-    db.Column('role', db.VARCHAR(25), nullable=False)
-)
+class Roles(db.Model):
+    __tablename__ = "roles"
+    user_id = db.Column(db.ForeignKey('users.user_id'), primary_key=True)
+    list_id = db.Column(db.ForeignKey('lists.list_id'), primary_key=True)
+    role = db.Column(db.VARCHAR(25), nullable=False)
+    user = db.relationship("Users", back_populates="lists")
+    list = db.relationship("Lists", back_populates="users")
 
 
 class Users(db.Model, UserMixin):
+    __tablename__ = "users"
     user_id = db.Column(db.INT, name='user_id', primary_key=True, autoincrement=True)
     username = db.Column(db.VARCHAR(25), name='username', nullable=False, unique=True, index=True)
     password_hash = db.Column(db.CHAR(102), name='password', nullable=False)
     filename = db.Column(db.VARCHAR(50), name='filename', nullable=False, default='default_profile.jpg')
-    lists = db.relationship('Lists', secondary=roles, back_populates='users')
+    lists = db.relationship("Roles", back_populates='user')
 
     def set_username(self, username):
         if not get_user(username):
@@ -49,12 +52,13 @@ class Users(db.Model, UserMixin):
 
 
 class Lists(db.Model):
+    __tablename__ = "lists"
     list_id = db.Column(db.INT, name='list_id', primary_key=True, autoincrement=True)
-    created = db.Column(db.TIMESTAMP, name='created', nullable=False, index=True, default=date.today())
+    created = db.Column(db.TIMESTAMP, name='created', nullable=False, index=True, default=functions.current_timestamp())
     title = db.Column(db.VARCHAR(25), name='title', nullable=False)
     content = db.Column(db.JSON, name='content', nullable=False)
     category = db.Column(db.VARCHAR(25), name='category', nullable=False, default='default')
-    users = db.relationship('Users', secondary=roles, back_populates='lists')
+    users = db.relationship("Roles", back_populates='list')
 
 
 # ---------- API ----------
@@ -76,12 +80,12 @@ def get_user(username):
 
 
 def get_role(user, list_id):
-    return db.session.query(roles).filter_by(user_id=user.user_id).filter_by(list_id=list_id).first()
+    return db.session.query(Roles).filter_by(user_id=user.user_id).filter_by(list_id=list_id).first()
 
 
 # List queries
 def __get_list_query(user, columns):
-    return db.session.query(columns).join(roles).filter(roles.c.user_id == user.user_id)
+    return db.session.query(columns).join(Roles).filter(Roles.user_id == user.user_id)
 
 
 def get_categories(user):
@@ -95,7 +99,17 @@ def get_lists(user, category=None):
 
 
 def get_list(user, list_id):
-    return __get_list_query(user, Lists).filter(roles.c.list_id == list_id).first()
+    return __get_list_query(user, Lists).filter(Roles.list_id == list_id).first()
 
+
+def add_list(user, category):
+    a = Roles(role="owner")
+    a.list = Lists()
+    a.list.title = ""
+    a.list.content = ""
+    a.list.category = category
+    user.lists.append(a)
+    db.session.commit()
+    return a.list.list_id
 
 

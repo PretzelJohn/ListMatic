@@ -1,22 +1,55 @@
-nav {
-    padding: 10px;
+/* Adds 140px space to left & right of contents */
+.container-fluid {
+	padding: 0 7.3%;
 }
 
-.navbar-toggler:focus {
-    box-shadow: none;
-    background-color: #444;
+/* Adds top & bottom padding to the navbar */
+.navbar {
+	padding: 6px 0 4px 0;
 }
 
+
+/* Styles the navigation link for the other pages */
 .nav-link {
-    color: #999;
+	margin-top: 15px;
+	margin-left: 37px;
+	letter-spacing: 0.4px;
 }
 
-.nav-link:hover {
-    color: #BBB;
-    border-bottom: inset 2px orange;
-    margin-bottom: -2px;
+
+/* Styles the navigation link for the current page */
+.active {
+	font-weight: bold;
+	letter-spacing: 1px;
 }
 
-.center.alert {
-    max-width: min(92%, 768px) !important;
+
+/* Positions the navbar's dropdown parts to match design exactly */
+.nav-profile, .nav-chevron, .dropdown-toggle {
+	position: relative;
+}
+.nav-profile {
+	bottom: 2px;
+	left: 0.5px;
+}
+.nav-chevron {
+	bottom: 3px;
+	left: 2px;
+}
+.dropdown-toggle {
+	bottom: 1px;
+	right: 2px;
+}
+
+
+/* Hides the default dropdown arrow */
+.dropdown-toggle::after {
+	display: none;
+}
+
+
+/* Styles the dropdown menu*/
+.dropdown-menu {
+	min-width: 194px;
+	padding: 0;
 }

@@ -1,0 +1,39 @@
+<link rel="stylesheet" type="text/css" href="/static/css/nav.css" crossorigin="anonymous">
+
+<!-- Navigation bar: collapses when screen is less than 576px wide -->
+<nav class="navbar navbar-expand-sm navbar-dark bg-navy">
+    <div class="container-fluid fs-5">
+        <!-- Logo -->
+        <a class="navbar-brand fs-2" href="{{ url_for('dashboard') }}">
+            l<span class="text-green">i</span>stMatic
+        </a>
+
+        <!-- Hamburger menu button for small screens -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navigation containers -->
+        <div class="collapse navbar-collapse" id="navbar">
+            <div class="navbar-nav ms-auto text-end">
+                <!-- Navigation links go here -->
+                <div class="nav-item dropdown">
+                    <!-- Dropdown menu button (always visible) -->
+                    <a class="nav-link dropdown-toggle p-0 mt-4" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ current_user.username }}
+                        &nbsp;
+                        <img class="nav-profile" src="https://listmatic.s3.us-east-2.amazonaws.com/{{ current_user.filename }}" width="32px" height="32px"/>
+                        <img class="nav-chevron" src="/static/img/chevron-down.svg"/>
+                    </a>
+
+                    <!-- Dropdown menu (hidden until button is pressed) -->
+                    <div class="dropdown-menu text-center fs-5 fs-6">
+                        <a class="dropdown-item text-navy p-2 rounded-top" href="{{ url_for('account') }}">Account</a>
+                        <hr class="dropdown-divider bg-navy m-auto w-75">
+                        <a class="dropdown-item text-navy p-2 rounded-bottom" href="{{ url_for('logout') }}">Sign Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

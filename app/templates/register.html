@@ -1,14 +1,56 @@
 {% extends "base.html" %}
 
+{% block header %}
+    <style rel="text/css">
+        body {
+            background-color: #023859;
+        }
+    </style>
+
+    {% with active=2 %}
+        {% include 'components/navbar.html' %}
+    {% endwith %}
+    {% include 'components/messages.html' %}
+{% endblock %}
+
 {% block content %}
-    <link rel="stylesheet" type="text/css" href="/static/css/splash.css">
+    <!-- Background image -->
+	<div class="position-absolute d-xxxl-block" style="left: 7.3%; bottom: 5.5%; z-index: -1;">
+		<img class="img-fluid" src="/static/img/undraw_chore_list_re_2lq8.svg" width="656px" height="496px">
+	</div>
 
-    <fieldset class="fieldset">
-        <h1>Welcome to <strong>ListMatic</strong>!</h1><hr><br>
-        <legend>Create an account</legend>
+    <!-- Centered form -->
+    <div class="center-outer">
+        <div class="center-inner">
+            <div class="text-white form">
+                <h1 class="fs-2 mt-5 mb-4">Create your account</h1>
+                <p class="fs-6 mb-4">Created for students by students</p>
 
-        {% include 'components/form.html' %}<br><br>
+                <form class="text-start" method="post" action="">
+                    {{ form.csrf_token }}
+                    <div class="mb-2 fs-6 arial">
+                        {{ form.username.label(class_="form-label mb-1 fw-bold") }}
+                        {{ form.username(class_="form-control rounded-3") }}
+                    </div>
+                    <div class="mb-2 fs-6 arial">
+                        {{ form.password.label(class_="form-label mb-1 fw-bold") }}
+                        {{ form.password(class_="form-control rounded-3") }}
+                    </div>
+                    <div class="mb-4 fs-6 arial">
+                        {{ form.confirm.label(class_="form-label mb-1 fw-bold") }}
+                        {{ form.confirm(class_="form-control rounded-3") }}
+                    </div>
+                    <div class="mb-4 fs-6 form-check">
+                        {{ form.agree(class_="form-check-input") }}
+                        {{ form.agree.label(class_="form-check-label", for="rememberMe") }}
+                    </div>
+                    <div class="mb-4 d-grid gap-2">
+                        {{ form.submit(class_="btn btn-green btn-lg text-white fw-bold fs-6 fs-7 arial") }}
+                    </div>
+                </form>
 
-        {% include 'components/messages.html' %}
-    </fieldset>
+                <p class="text-center fs-6">Already have an account?&nbsp;&nbsp;<a class="link link-green fw-bold" href="{{ url_for('login') }}">Sign In</a></p>
+            </div>
+        </div>
+    </div>
 {% endblock %}
