@@ -9,7 +9,7 @@
 }
 
 .card {
-    min-width: 240px;
+    width: 240px;
     height: 166px;
     margin-top: 10px;
     overflow: clip;
@@ -31,6 +31,10 @@
     min-width: 150px;
 }
 
+.flickity-prev-next-button {
+    background-color: #00bfa6 !important;
+    color: #023859;
+}
 .carousel {
     padding: 0 4.2%;
 }
