@@ -17,10 +17,6 @@ html, body {
 	padding: 0 7.3%;
 }
 
-.bg-navy {
-	background-color: #023859;
-}
-
 
 /* Link styles */
 .link {
@@ -43,17 +39,17 @@ html, body {
 	height: 48px;
 	border-radius: 4px;
 }
-.btn-navy {
+.btn-navy, .bg-navy {
 	background-color: #023859;
 }
-.btn-navy:hover {
-	background-color: #225879;
+.btn-navy:hover, .btn-navy:active {
+	background-color: #225879 !important;
 }
-.btn-green {
+.btn-green, .bg-green {
 	background-color: #00bfa6;
 }
-.btn-green:hover {
-	background-color: #20dfc6;
+.btn-green:hover, .btn-green:active {
+	background-color: #20dfc6 !important;
 }
 
 
@@ -98,7 +94,8 @@ html, body {
 
 /* Form styles */
 .form {
-	width: 360px;
+	width: 100%;
+	max-width: 360px;
 	margin: auto;
 }
 

@@ -60,6 +60,10 @@ class Lists(db.Model):
     category = db.Column(db.VARCHAR(25), name='category', nullable=False, default='default')
     users = db.relationship("Roles", back_populates='list', cascade="all, delete-orphan")
 
+    def set_category(self, category):
+        self.category = category
+        db.session.commit()
+
 
 # ---------- API ----------
 # User queries
@@ -95,7 +99,7 @@ def get_categories(user):
 def get_lists(user, category=None):
     if not category:
         return __get_list_query(user, Lists).all()
-    return __get_list_query(user, Lists).filter(Lists.category == category).all()
+    return __get_list_query(user, Lists).filter(Lists.category == category).order_by(Lists.created.desc()).all()
 
 
 def get_list(user, list_id):
@@ -113,3 +117,10 @@ def add_list(user, category):
     return a.list.list_id
 
 
+def delete_list(user, list_id):
+    list = get_list(user, list_id)
+    list_ids = [list.list_id for list in user.lists]
+    if list.list_id not in list_ids:
+        return
+    db.session.delete(list)
+    db.session.commit()

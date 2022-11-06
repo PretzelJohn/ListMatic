@@ -52,4 +52,5 @@
 .dropdown-menu {
 	min-width: 194px;
 	padding: 0;
+	box-shadow: 0px 0px 10px #00000080;
 }

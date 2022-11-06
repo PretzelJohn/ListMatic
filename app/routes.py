@@ -22,20 +22,18 @@ def index():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-
     categories = get_categories(current_user)
     if not categories:
         categories = [("Default", )]
     lists = get_lists(current_user)
-    return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists)
+
+    return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists, str=str)
 
 
 # Shows a specific list
-@app.route('/dashboard/<category>/<list_id>')
+@app.route('/dashboard/<list_id>')
 @login_required
-def list_view(category, list_id):
+def list_view(list_id):
     role_obj = get_role(current_user, list_id)
 
     if not role_obj:
@@ -49,12 +47,37 @@ def list_view(category, list_id):
     return render_template('list.html', list=list_obj, role=role_obj.role)
 
 
-@app.route('/create/<category>', methods=['GET'])
+@app.route('/dashboard/create/<category>', methods=['GET'])
 @login_required
 def list_create(category):
-    flash('You have created a new list!', 'success')
     list_id = add_list(current_user, category)
+    flash('You have created a new list!', 'success')
     return redirect(url_for('list_view', category=category, list_id=list_id))
+
+
+@app.route('/dashboard/change/<list_id>', methods=['POST'])
+@login_required
+def list_change(list_id):
+    category = request.form.get("selectedCategory")
+    if category == "new":
+        if request.form.get("newCategoryText"):
+            category = request.form.get("newCategoryText")
+        else:
+            flash('You must specify the name of the new category!', 'danger')
+            return redirect(url_for('dashboard'))
+
+    list = get_list(current_user, list_id)
+    list.set_category(category)
+    flash('You have moved the list to the '+category+' category!', 'success')
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/dashboard/delete/<list_id>', methods=['POST'])
+@login_required
+def list_delete(list_id):
+    delete_list(current_user, list_id)
+    flash('You have deleted the list!', 'success')
+    return redirect(url_for('dashboard'))
 
 
 # ---------- User account ----------
