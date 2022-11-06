@@ -6,24 +6,36 @@
 {% endblock %}
 
 {% block content %}
+    <link rel="stylesheet" type="text/css" href="/static/css/list.css" crossorigin="anonymous">
+
     <div class="container-fluid">
         <div class="row text-start link-back">
 			<a class="link fw-bold text-navy fs-6" href="{{ url_for('dashboard') }}">◄ Back to home</a>
 		</div>
+
+        <p id="saveTime" class="text-dark fs-5"></p>
+
         <div class="row row-cols-1 row-cols-xl-2">
             <div class="col mb-5">
-                <form class="w-100">
-                    <input class="form-control text-navy w-100 mb-4 fs-1 fw-bold sans" type="text" placeholder="Title" value="{{ list.title }}"/>
+                <input id="titleText" class="form-text text-navy w-100 mb-4 fs-1 fw-bold" type="text" placeholder="Title" value="{{ list.title }}" autocomplete="off"/>
+                <div id="contentContainer" class="w-100">
                     {% for item in list.content %}
-                        <input class="form-control" type="text" value="{{ item }}" style="border: none;"/>
+                        <div class="d-flex flex-row">
+                            <input class="form-text w-100" type="text" placeholder="..." value="{{ item }}"/>
+                            <button class="btn btn-danger btn-delete" onclick="this.parentElement.parentElement.removeChild(this.parentElement); save();">
+                                <img style="scale: 1.5;" src="/static/img/trash.svg"/>
+                            </button>
+                        </div>
                     {% endfor %}
-                    <div class="text-center mt-3">
-                        <button class="btn btn-green rounded-pill p-1 pe-3 d-inline fw-semibold fs-6 text-white align-middle">
-                            <img src="/static/img/plus.svg" width="40px" height="40px"/>
-                            Add new row
-                        </button>
-                    </div>
-                </form>
+                </div>
+
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-green rounded-pill p-1 pe-3 d-inline fw-semibold fs-6 text-white align-middle" onclick="addRow()">
+                        <img src="/static/img/plus.svg" width="40px" height="40px"/>
+                        Add new row
+                    </button>
+                </div>
             </div>
             <div class="col text-center">
                 {% if role in "owner" %}
@@ -41,4 +53,67 @@
     {% with id="inviteModal", header="Manage access", body="", submit_action="", submit_color="primary", submit_text="Submit" %}
 		{% include 'components/modal.html' %}
 	{% endwith %}
+
+    <script type="text/javascript">
+        const titleText = document.getElementById("titleText");
+        const contentContainer = document.getElementById("contentContainer");
+        const time = document.getElementById("saveTime");
+        titleText.addEventListener("focusout", save);
+        contentContainer.addEventListener("focusout", save);
+        function save() {
+            let arr = [];
+            for(let i = 0; i < contentContainer.children.length; i++) {
+                const child = contentContainer.children[i].children[0];
+                if(child.hasAttribute("onclick")) continue;
+                arr.push(child.value);
+            }
+
+            const data = {title: titleText.value, content: arr}
+
+            const tokens = window.location.href.split('/');
+            const url = "/"+tokens[tokens.length-1]+"/update";
+            console.log(url);
+            if(tokens.length > 0) {
+                console.log(tokens[tokens.length - 1]);
+                fetch(url, {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                }).then(res => {
+                    if(res.ok) {
+                        console.log("Saved! response: ", res);
+                        const date = new Date(Date.now()).toLocaleTimeString();
+                        time.innerText = "Last saved at " + date;
+                    }
+                });
+            }
+        }
+
+        function addRow() {
+            const container = document.createElement("div");
+            container.setAttribute("class", "d-flex flex-row");
+
+            const input = document.createElement("input");
+            input.setAttribute("class", "form-text w-100");
+            input.setAttribute("type", "text");
+            input.setAttribute("placeholder", "...");
+            container.appendChild(input);
+
+            const trash = document.createElement("button");
+            trash.setAttribute("class", "btn btn-danger btn-delete");
+
+            const trashIcon = document.createElement("img");
+            trashIcon.style.scale = "1.5";
+            trashIcon.src = "/static/img/trash.svg";
+            trash.appendChild(trashIcon);
+            container.appendChild(trash);
+            contentContainer.appendChild(container);
+
+            trash.onclick = () => {
+                container.parentElement.removeChild(container);
+                save();
+            }
+            save();
+        }
+    </script>
 {% endblock %}

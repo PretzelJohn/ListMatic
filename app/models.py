@@ -64,6 +64,14 @@ class Lists(db.Model):
         self.category = category
         db.session.commit()
 
+    def set_title(self, title):
+        self.title = title
+        db.session.commit()
+
+    def set_content(self, content):
+        self.content = content
+        db.session.commit()
+
 
 # ---------- API ----------
 # User queries

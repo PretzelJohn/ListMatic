@@ -102,12 +102,16 @@ html, body {
 	margin: auto;
 }
 
-.form-control {
+.form-control, .form-text {
 	height: 50px;
 	background-color: #F1F9FF !important;
-	border-color: #BCE0FD;
-	border-width: 2px;
+	border: 2px solid #BCE0FD;
 	border-radius: 10px;
+}
+
+.form-text {
+	border: none !important;
+	padding: 10px;
 }
 
 .form-check .form-check-input {
@@ -115,8 +119,7 @@ html, body {
 	margin-right: 0.8rem;
 	margin-left: -0.8rem;
 	background-color: #023859;
-	border-color: #7FC4FD;
-	border-width: 1px;
+	border: 1px solid #7FC4FD;
 	border-radius: 2px;
 	box-shadow: none;
 }

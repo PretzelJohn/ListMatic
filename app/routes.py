@@ -30,8 +30,17 @@ def dashboard():
     return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists, str=str)
 
 
+# Creates a new category
+@app.route('/create/<string:category>', methods=['GET'])
+@login_required
+def list_create(category):
+    list_id = add_list(current_user, category)
+    flash('You have created a new list!', 'success')
+    return redirect(url_for('list_view', category=category, list_id=list_id))
+
+
 # Shows a specific list
-@app.route('/dashboard/<list_id>')
+@app.route('/<int:list_id>')
 @login_required
 def list_view(list_id):
     role_obj = get_role(current_user, list_id)
@@ -47,17 +56,30 @@ def list_view(list_id):
     return render_template('list.html', list=list_obj, role=role_obj.role)
 
 
-@app.route('/dashboard/create/<category>', methods=['GET'])
+# Updates a list
+@app.route('/<int:list_id>/update', methods=['GET', 'POST'])
 @login_required
-def list_create(category):
-    list_id = add_list(current_user, category)
-    flash('You have created a new list!', 'success')
-    return redirect(url_for('list_view', category=category, list_id=list_id))
+def list_update(list_id):
+    if request.method != 'POST':
+        return redirect(url_for('list_view', list_id=list_id))
+
+    try:
+        data = request.get_json()
+        list = get_list(current_user, list_id)
+        list.set_title(data["title"])
+        list.set_content(data["content"])
+        return make_response('Success', 200)
+    except Exception as e:
+        return make_response(e, 200)
 
 
-@app.route('/dashboard/change/<list_id>', methods=['POST'])
+# Changes the category of a list
+@app.route('/<int:list_id>/change', methods=['GET', 'POST'])
 @login_required
 def list_change(list_id):
+    if request.method != 'POST':
+        return redirect(url_for('dashboard'))
+
     category = request.form.get("selectedCategory")
     if category == "new":
         if request.form.get("newCategoryText"):
@@ -76,9 +98,13 @@ def list_change(list_id):
     return redirect(url_for('dashboard'))
 
 
-@app.route('/dashboard/delete/<list_id>', methods=['POST'])
+# Deletes a list
+@app.route('/<int:list_id>/delete/', methods=['GET', 'POST'])
 @login_required
 def list_delete(list_id):
+    if request.method != 'POST':
+        return redirect(url_for('dashboard'))
+
     delete_list(current_user, list_id)
     flash('You have deleted the list!', 'success')
     return redirect(url_for('dashboard'))
@@ -119,18 +145,24 @@ def account():
 
 
 # Handles account deletes
-@app.route('/account/delete', methods=['POST'])
+@app.route('/account/delete', methods=['GET', 'POST'])
 @login_required
 def account_delete():
+    if request.method != 'POST':
+        return redirect(url_for('account'))
+
     current_user.remove()
     flash('Your account was deleted successfully!', 'success')
     return redirect(url_for('login'))
 
 
 # Handles profile picture updates
-@app.route('/profile/update', methods=['POST'])
+@app.route('/profile/update', methods=['GET', 'POST'])
 @login_required
 def profile_edit():
+    if request.method != 'POST':
+        return redirect(url_for('account'))
+
     if 'file' not in request.files:
         flash('No file selected!', 'danger')
 
@@ -155,9 +187,12 @@ def profile_edit():
 
 
 # Handles profile picture deletes
-@app.route('/profile/delete', methods=['POST'])
+@app.route('/profile/delete', methods=['GET', 'POST'])
 @login_required
 def profile_delete():
+    if request.method != 'POST':
+        return redirect(url_for('account'))
+
     if current_user.filename != 'default_profile.jpg':
         s3_delete(current_user.filename)
     current_user.set_filename('default_profile.jpg')
@@ -168,6 +203,9 @@ def profile_delete():
 # ---------- User login ----------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user and current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
     # Creates a new login form
     form = LoginForm()
 
