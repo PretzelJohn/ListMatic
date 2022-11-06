@@ -31,12 +31,10 @@
     min-width: 150px;
 }
 
-.dot, .dot.is-selected, .flickity-prev-next-button {
-    background-color: #00bfa6 !important;
-}
 .carousel {
     padding: 0 4.2%;
 }
+
 .carousel-cell {
     margin-right: 2.4%;
 }
