@@ -22,9 +22,9 @@
 }
 
 .card-dropdown {
-    position: absolute;
-    bottom: 132px;
-    left: 206px;
+    position: relative;
+    bottom: 156px;
+    right: 16px;
 }
 
 .card-dropdown .dropdown-menu {

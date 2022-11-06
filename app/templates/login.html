@@ -24,7 +24,7 @@
         <div class="center-inner">
             <div class="text-white form">
                 <h1 class="fs-1 mt-5 mb-4">Sign In</h1>
-                <p class="fs-5 fs-6 mb-4">Login to manage your account</p>
+                <p class="fs-6 mb-4">Login to manage your account</p>
 
                 <form class="text-start" method="post" action="">
                     {{ form.csrf_token }}
@@ -44,11 +44,11 @@
                         <a class="link-green float-end" href="#">Forgot password?</a>
                     </div>
                     <div class="mb-4 d-grid gap-2">
-                        {{ form.submit(class_="btn btn-green btn-lg text-white fw-bold fs-6 fs-7 arial") }}
+                        {{ form.submit(class_="btn btn-green btn-lg text-white fw-bold fs-6 arial") }}
                     </div>
                 </form>
 
-                <p class="text-center fs-5 fs-6">Don't have an account?&nbsp;&nbsp;<a class="link link-green fw-bold" href="{{ url_for('register') }}">Sign up</a></p>
+                <p class="text-center fs-6">Don't have an account?&nbsp;&nbsp;<a class="link link-green fw-bold" href="{{ url_for('register') }}">Sign up</a></p>
             </div>
         </div>
     </div>

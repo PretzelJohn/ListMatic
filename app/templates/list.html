@@ -8,37 +8,32 @@
 {% block content %}
     <div class="container-fluid">
         <div class="row text-start link-back">
-			<a class="link fw-bold text-navy fs-5 fs-6" href="{{ url_for('dashboard') }}">◄ Back to home</a>
+			<a class="link fw-bold text-navy fs-6" href="{{ url_for('dashboard') }}">◄ Back to home</a>
 		</div>
-        <div class="row">
-            <div class="col-7">
+        <div class="row row-cols-1 row-cols-xl-2">
+            <div class="col mb-5">
                 <form class="w-100">
-                    <input class="fs-1 text-navy w-100" type="text" placeholder="Title" value="{{ list.title }}"/>
+                    <input class="form-control text-navy w-100 mb-4 fs-1 fw-bold sans" type="text" placeholder="Title" value="{{ list.title }}"/>
+                    {% for item in list.content %}
+                        <input class="form-control" type="text" value="{{ item }}" style="border: none;"/>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <button class="btn btn-green rounded-pill p-1 pe-3 d-inline fw-semibold fs-6 text-white align-middle">
+                            <img src="/static/img/plus.svg" width="40px" height="40px"/>
+                            Add new row
+                        </button>
+                    </div>
                 </form>
             </div>
-            <div class="col-1"></div>
-            <div class="col-4 text-center">
+            <div class="col text-center">
                 {% if role in "owner" %}
-                    <button class="btn btn-lg btn-navy text-white w-75 fs-6 fs-7 arial" type="button" data-bs-toggle="modal" data-bs-target="#inviteModal">
+                    <button class="btn btn-lg btn-navy text-white w-75 fs-6 arial" type="button" data-bs-toggle="modal" data-bs-target="#inviteModal">
                         Invite Friends & Family
                     </button>
                 {% endif %}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-7">
-                <form class="w-100">
-                    {% if not list.content %}
-                        <input class="form-control" type="text" placeholder="List Item" value="" style="border: none;"/>
-                    {% endif %}
-                    {% for item in list.content %}
-                        <input class="form-control" type="text" placeholder="List Item" value="{{ item }}" style="border: none;"/>
-                    {% endfor %}
-                </form>
-            </div>
-            <div class="col-1"></div>
-            <div class="col-4 text-center">
-                <p>Your role: {{ role }}</p>
+                <div class="col text-center mt-3">
+                    <p>Your role: {{ role }}</p>
+                </div>
             </div>
         </div>
     </div>

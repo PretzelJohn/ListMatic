@@ -90,6 +90,9 @@ html, body {
 .arial {
     font-family: Arial, sans-serif;
 }
+.sans {
+    font-family: "Open Sans", sans-serif;
+}
 
 
 /* Form styles */
