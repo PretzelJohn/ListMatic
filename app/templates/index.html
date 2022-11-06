@@ -14,5 +14,63 @@
 {% endblock %}
 
 {% block content %}
-    <p class="text-center text-white">Hello, world!</p>
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css" crossorigin="anonymous">
+
+	<div class="position-fixed bottom-0 start-0 d-none d-sm-block">
+		<div class="nacho"></div>
+	</div>
+
+    <div class="container-fluid text-start pt-5 pb-5 mt-5 w-100">
+
+		<div class="row row-cols-1 row-cols-lg-2 w-100">
+			<div class="col col-lg-8">
+				<h1 class="fw-bold fs-1 text-white mb-5 position-sticky">Create and share lists<br>with family & friends.</h1>
+			</div>
+			<div class="col col-lg-4 h-auto d-flex align-items-center justify-content-center">
+				<a class="btn btn-lg btn-green-outline fw-bold fs-5 p-5 pt-4 pb-4 mb-5 h-auto" style="z-index: 1;" href="/register">LET'S START</a>
+			</div>
+		</div>
+
+		<div class="row row-cols-1 row-cols-xl-2 row-cols-xxl-3 text-end text-xl-start">
+			<div class="col col-xxl-3 position-relative mt-5 d-none d-xxl-block" style="z-index: 1;">
+				<img class="img-fluid" src="/static/img/undraw_cloud_hosting_7xb1.svg" alt="" width="432" height="429"/>
+			</div>
+
+			<div class="col col-xxl-3 position-relative mt-5 d-none d-xl-block" style="z-index: 1;">
+				<img class="img-fluid" src="/static/img/undraw_selection_re_ycpo.svg" alt="" width="549" height="387"/>
+			</div>
+
+			<div class="col col-xxl-6 position-relative" style="z-index: 1;">
+				<img class="img-fluid" src="/static/img/undraw_online_organizer_re_156n.svg" alt="" width="430" height="275"/>
+			</div>
+		</div>
+
+
+		<!--div class="center-inner">
+			<div class="col-lg-5">
+				<!div class="row-lg-7">
+					<img class="img-fluid mt-5 mb-5" src="/static/img/undraw_selection_re_ycpo.svg" alt="" width="549" height="387"/>
+					<h2 class = "text-white">Grocery Lists</h2>
+					<p class = "text-white">Never miss another item with collaborative Grocery lists</p>
+					<p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+				</div>
+
+		  		<div class="row-lg-7">
+		  			<img class="rounded-circle" src="/static/img/undraw_wishlist_re_m7tv.svg" alt="" width="50" height="50"/>
+					<h2 class="text-white">Wishlists</h2>
+					<p class="text-white">Let your friends get you the perfect gift with collaborative wishlists</p>
+					<p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+				</div>
+
+				<div class="row-lg-7">
+					<img class="rounded-circle" src="/static/img/undraw_to_do_re_jaef.svg" alt="" width="50" height="50"/>
+					<h2 class="text-white">To-Do Lists</h2>
+					<p class="text-white">Keep track of your progress and pending tasks with To-Do Lists</p>
+					<p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+				</div>
+            </div>
+        </div-->
+    </div>
+
+
 {% endblock %}

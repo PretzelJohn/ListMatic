@@ -51,6 +51,17 @@ html, body {
 .btn-green:hover, .btn-green:active {
 	background-color: #20dfc6 !important;
 }
+.btn-green-outline {
+	background-color: #023859;
+	border: 1px solid white;
+	color: #00bfa6;
+}
+.btn-green-outline:hover, .btn-green-outline:active {
+	background-color: #225879;
+	border: 1px solid white;
+	border-radius: 4px;
+	color: #20dfc6;
+}
 
 
 /* Font styles */
