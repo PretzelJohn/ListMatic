@@ -15,11 +15,29 @@
     <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
     <link rel="stylesheet" type="text/css" href="/static/css/dashboard.css" crossorigin="anonymous">
 
-    <div class="container-fluid text-white">
+    <!-- Side panel -->
+    <!--div class="dropend position-absolute top-50 start-0">
+        <button class="btn btn-light dropdown-toggle fs-3 h-100" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidePanel" aria-controls="sidePanel"></button>
+    </div-->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidePanel" aria-labelledby="sidePanelLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Menu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            Test
+        </div>
+    </div>
+
+    <!-- All lists -->
+    <div class="container-fluid text-white pb-5 mb-5">
         {% for category in categories %}
             <div class="row category">
-                <p class="fs-4">{{ category[0] }}</p><br>
+                <h2 class="fs-4 mb-1">{{ category }}</h2>
+
+                <!-- Flickity scrolling row -->
                 <div class="carousel" data-flickity='{ "cellAlign": "left", "groupCells": true, "freeScroll": true, "lazyLoad": true }'>
+                    <!-- Create list card -->
                     <div class="carousel-cell">
                         <div class="card text-dark">
                             <div class="card-body p-3">
@@ -33,12 +51,13 @@
                                         </svg>
                                     </p>
                                 </div>
-                                <a class="btn stretched-link" href="{{ url_for('list_create', category=category[0]) }}"></a>
+                                <a class="btn stretched-link" href="{{ url_for('list_create', category=category) }}"></a>
                             </div>
                         </div>
                     </div>
 
-                    {% for list in get_lists(current_user, category[0]) %}
+                    <!-- Existing list cards -->
+                    {% for list in get_lists(current_user, category) %}
                         <div class="carousel-cell">
                             <a class="link" href="{{ url_for('list_view', list_id=list.list_id) }}">
                                 <div class="card text-dark">
@@ -58,6 +77,8 @@
                                     </div>
                                 </div>
                             </a>
+
+                            <!-- List card options dropdown -->
                             <div class="dropdown card-dropdown">
                                 <a class="fs-6 dropdown-toggle p-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#bbb" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
@@ -74,7 +95,8 @@
                     {% endfor %}
                 </div>
 
-                {% for list in get_lists(current_user, category[0]) %}
+                <!-- MODALS -->
+                {% for list in get_lists(current_user, category) %}
                     <div class="text-dark">
                         <!-- CHANGE CATEGORY MODAL -->
                         <div class="modal fade" id="change{{ list.list_id }}Modal" tabindex="-1" role="dialog" aria-labelledby="change{{ list.list_id }}ModalLabel" aria-hidden="true">
@@ -87,24 +109,29 @@
                                     <form method="POST" action="{{ url_for('list_change', list_id=list.list_id) }}">
                                         <div class="modal-body text-center">
                                             <p class="text-start">Which category do you want to move the list to?</p>
-                                            <div class="btn-group-vertical" id="selectCategory-{{ list.list_id }}" onchange="
+                                            <div class="" id="selectCategory-{{ list.list_id }}" onchange="
                                                 const button = document.getElementById('newCategory-{{ list.list_id }}');
                                                 const textbox = document.getElementById('newCategoryText-{{ list.list_id }}');
-                                                if(button.checked) textbox.classList.remove('d-none');
-                                                else textbox.classList.add('d-none');
+                                                if(button.checked) {
+                                                    textbox.classList.remove('d-none');
+                                                    textbox.setAttribute('required', 'required');
+                                                } else {
+                                                    textbox.classList.add('d-none');
+                                                    textbox.removeAttribute('required');
+                                                }
                                             ">
                                                 {% for category2 in categories %}
-                                                    {% if category2[0] == category[0] %}
-                                                        <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2[0] }}" id="{{ category2[0] }}-{{ list.list_id }}" autocomplete="off" checked>
+                                                    {% if category2 == category %}
+                                                        <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2 }}" id="{{ category2 }}-{{ list.list_id }}" autocomplete="off" checked>
                                                     {% else %}
-                                                        <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2[0] }}" id="{{ category2[0] }}-{{ list.list_id }}" autocomplete="off">
+                                                        <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2 }}" id="{{ category2 }}-{{ list.list_id }}" autocomplete="off">
                                                     {% endif %}
-                                                    <label class="btn btn-outline-primary h-auto" for="{{ category2[0] }}-{{ list.list_id }}">{{ category2[0] }}</label>
+                                                    <label class="btn btn-outline-primary h-auto mb-2" for="{{ category2 }}-{{ list.list_id }}">{{ category2 }}</label>
                                                 {% endfor %}
                                                 <input class="btn-check" type="radio" name="selectedCategory" value="new" id="newCategory-{{ list.list_id }}" autocomplete="off">
-                                                <label class="btn btn-outline-primary h-auto" for="newCategory-{{ list.list_id }}">Create New +</label>
+                                                <label class="btn btn-outline-primary h-auto mb-2" for="newCategory-{{ list.list_id }}">Create New +</label>
                                             </div>
-                                            <input class="form-control mt-3 d-none" type="text" name="newCategoryText" id="newCategoryText-{{ list.list_id }}" placeholder="New category name">
+                                            <input class="form-control mt-3 d-none" type="text" name="newCategoryText" id="newCategoryText-{{ list.list_id }}" placeholder="New category name" autocomplete="off">
                                         </div>
                                         <div class="modal-footer">
                                             <input class="btn btn-primary" type="submit" value="Submit"/>

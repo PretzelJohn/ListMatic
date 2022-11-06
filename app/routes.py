@@ -22,9 +22,9 @@ def index():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    categories = get_categories(current_user)
+    categories = [category[0] for category in get_categories(current_user)]
     if not categories:
-        categories = [("Default", )]
+        categories = ["Default"]
     lists = get_lists(current_user)
 
     return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists, str=str)
@@ -67,8 +67,12 @@ def list_change(list_id):
             return redirect(url_for('dashboard'))
 
     list = get_list(current_user, list_id)
-    list.set_category(category)
-    flash('You have moved the list to the '+category+' category!', 'success')
+    if category == list.category:
+        flash('The list was already in the '+category+' category.', 'danger')
+    else:
+        list.set_category(category)
+        flash('You have moved the list to the '+category+' category!', 'success')
+
     return redirect(url_for('dashboard'))
 
 

@@ -93,7 +93,7 @@ def __get_list_query(user, columns):
 
 
 def get_categories(user):
-    return __get_list_query(user, Lists.category).distinct().all()
+    return __get_list_query(user, Lists.category).distinct().order_by(Lists.category.asc()).all()
 
 
 def get_lists(user, category=None):
