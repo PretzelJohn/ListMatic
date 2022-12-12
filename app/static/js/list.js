@@ -1,11 +1,14 @@
 const titleText = document.getElementById("titleText");
-const contentContainer = document.getElementById("contentContainer");
 const time = document.getElementById("saveTime");
+const contentContainer = document.getElementById("contentContainer");
+const inviteContentContainer = document.getElementById("inviteContentContainer");
 
 const saveBtn = document.getElementById("saveBtn");
 const addBtn = document.getElementById("addBtn");
+const addUserBtn = document.getElementById("addUserBtn");
 saveBtn.addEventListener('click', save);
 addBtn.addEventListener('click', addRow);
+addUserBtn.addEventListener('click', addUser);
 
 const focusable = document.querySelectorAll(".focusable");
 focusable.forEach((e) => {
@@ -90,6 +93,9 @@ function addRow() {
     //Add trash button
     const trash = document.createElement("button");
     trash.setAttribute("class", "btn btn-danger btn-delete m-0");
+    trash.onclick = () => {
+        contentContainer.removeChild(container);
+    }
 
     const trashIcon = document.createElement("img");
     trashIcon.setAttribute("style", "scale: 1.5");
@@ -99,9 +105,67 @@ function addRow() {
     container.appendChild(cellContainer);
     contentContainer.appendChild(container);
 
-    trash.onclick = () => {
-        contentContainer.removeChild(container);
+    input.focus();
+}
+
+//Adds a user to the invite modal
+function addUser() {
+    const container = document.createElement("tr");
+
+    const cellContainer = document.createElement("td");
+    cellContainer.setAttribute("class", "hstack gap-2 w-100");
+
+
+    //Add profile picture
+    const img = document.createElement("img");
+    img.setAttribute("width", "32");
+    img.setAttribute("height", "32");
+    img.setAttribute("src", "https://listmatic.s3.us-east-2.amazonaws.com/default_profile.jpg");
+    cellContainer.appendChild(img);
+
+
+    //Add username text box
+    const textContainer = document.createElement("div");
+    textContainer.setAttribute("class", "flex-grow-1 text-start");
+
+    const input = document.createElement("input");
+    input.setAttribute("name",  "username");
+    input.setAttribute("class", "form-text w-100 flex-grow-1 m-0 me-1");
+    input.setAttribute("type", "text");
+    input.setAttribute("placeholder", "username");
+    input.setAttribute("value", "");
+    input.setAttribute("autocomplete", "off");
+    textContainer.appendChild(input);
+    cellContainer.appendChild(textContainer);
+
+
+    //Add select dropdown
+    const select = document.createElement("select");
+    select.setAttribute("name", "role");
+    select.setAttribute("id", "roles");
+
+    const optionEditor = document.createElement("option");
+    optionEditor.setAttribute("value", "editor");
+    optionEditor.innerHTML = "Editor";
+    select.appendChild(optionEditor);
+
+    const optionViewer = document.createElement("option");
+    optionViewer.setAttribute("value", "viewer");
+    optionViewer.setAttribute("selected", "selected")
+    optionViewer.innerHTML = "Viewer";
+    select.appendChild(optionViewer);
+    cellContainer.appendChild(select);
+
+
+    //Add delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.setAttribute("class", "btn-close");
+    deleteBtn.onclick = () => {
+        inviteContentContainer.removeChild(container);
     }
+    cellContainer.appendChild(deleteBtn);
+    container.appendChild(cellContainer);
+    inviteContentContainer.appendChild(container);
 
     input.focus();
 }

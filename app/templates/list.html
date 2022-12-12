@@ -31,7 +31,7 @@
                     {% endif %}
                 </div>
 
-                <table class="table table-responsive table-borderless table-striped shadow w-100">
+                <table class="table table-responsive table-borderless table-striped shadow">
                     <thead></thead>
                     <tbody id="contentContainer">
                         {% for item in list.content %}
@@ -95,9 +95,116 @@
     </div>
 
     {% if role in 'owner' %}
-        {% with id="inviteModal", header="Manage access", body="<p>Test</p>", submit_action="", submit_color="primary", submit_text="Submit" %}
-            {% include 'components/modal.html' %}
-        {% endwith %}
+        <!-- INVITE MODAL -->
+        <div class="modal fade" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="inviteModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content text-start">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="inviteModalLabel">Manage access</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body text-center">
+                        <div class="d-flex flex-row">
+                            <p class="text-start flex-grow-1">Choose who has access to this list.</p>
+                            <a class="link text-navy fw-bold fs-6" role="button" data-bs-toggle="collapse" href="#info" aria-expanded="false" aria-controls="info">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-circle-fill" viewBox="0 0 16 16">
+                                  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                info
+                            </a>
+                        </div>
+                        <div id="info" class="collapse">
+                            <table class="table table-responsive table-borderless table-striped shadow m-0 mb-5">
+                                <thead>
+                                    <th>Can they...</th>
+                                    <th>Viewer</th>
+                                    <th>Editor</th>
+                                    <th>Owner</th>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>View this list?</td>
+                                        <td>✔</td>
+                                        <td>✔</td>
+                                        <td>✔</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Edit this list?</td>
+                                        <td></td>
+                                        <td>✔</td>
+                                        <td>✔</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Delete this list?</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>✔</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Invite others?</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>✔</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                        {% with roles = get_roles(list.list_id) %}
+                            <form id="rolesForm" method="POST" action="{{ url_for('role_add', list_id=list.list_id) }}">
+                                <table class="table table-responsive table-borderless table-striped shadow">
+                                    <tbody id="inviteContentContainer">
+                                        {% for role in roles %}
+                                            <tr>
+                                                <td class="hstack gap-2 w-100">
+                                                    <img width="32" height="32" src="https://listmatic.s3.us-east-2.amazonaws.com/{{ role.user.filename }}"/>
+                                                    <input name="username" type="text" class="form-text w-100 flex-grow-1 m-0 me-1" value="{{ role.user.username }}{% if role.user == current_user %} (you){% endif %}" disabled/>
+                                                    <input name="username" type="text" class="form-text w-100 flex-grow-1 m-0 me-1" value="{{ role.user.username }}" hidden/>
+                                                    {% if role.role in 'owner' %}
+                                                        <select name="role" disabled>
+                                                            <option value="owner" selected>Owner</option>
+                                                        </select>
+                                                        <select name="role" id="roles-{{ role.user.user_id }}" hidden>
+                                                            <option value="owner" selected>Owner</option>
+                                                        </select>
+                                                        <button class="btn-close invisible"></button>
+                                                    {% elif role.role in 'editor' %}
+                                                        <select name="role" id="roles-{{ role.user.user_id }}">
+                                                            <option value="editor" selected>Editor</option>
+                                                            <option value="viewer">Viewer</option>
+                                                        </select>
+                                                        <button class="btn-close" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"></button>
+                                                    {% else %}
+                                                        <select name="role" id="roles-{{ role.user.user_id }}">
+                                                            <option value="editor">Editor</option>
+                                                            <option value="viewer" selected>Viewer</option>
+                                                        </select>
+                                                        <button class="btn-close" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode)"></button>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </form>
+
+                            <div class="text-center mt-3">
+                                <button id="addUserBtn" class="btn btn-green rounded-pill p-1 pe-3 d-inline fs-6 arial text-white align-middle">
+                                    <img src="/static/img/plus.svg" width="32" height="32"/>
+                                    Add user
+                                </button>
+                            </div>
+                        {% endwith %}
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-primary" type="submit" form="rolesForm" value="Save"/>
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
 
     {% if role in ['owner', 'editor'] %}

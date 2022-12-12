@@ -53,7 +53,7 @@ def list_view(list_id):
         return not_found_error('')
 
     print(list_obj, role_obj.role)
-    return render_template('list.html', list=list_obj, role=role_obj.role)
+    return render_template('list.html', list=list_obj, role=role_obj.role, get_roles=get_roles)
 
 
 # Updates a list
@@ -120,6 +120,44 @@ def list_delete(list_id):
     delete_list(current_user, list_id)
     flash('You have deleted the list!', 'success')
     return redirect(url_for('dashboard'))
+
+
+# Adds a user with a role to a list
+@app.route('/<int:list_id>/add_role', methods=['GET', 'POST'])
+@login_required
+def role_add(list_id):
+    if request.method != 'POST':
+        return redirect(url_for('list_view', list_id=list_id))
+
+    role = get_role(current_user, list_id)
+    if role and role.role not in 'owner':
+        return redirect(url_for('list_view', list_id=list_id))
+
+    usernames = request.form.getlist('username')
+    roles = request.form.getlist('role')
+
+    for role in get_roles(list_id):
+        if role.user.username not in usernames:
+            flash('Role "'+str(role.role)+'" of "' + str(role.user.username) + '" removed successfully!', 'success')
+            delete_role(role.user, list_id)
+        else:
+            i = usernames.index(role.user.username)
+            if role.role not in roles[i]:
+                flash('Role "' + str(role.role) + '" of "' + str(role.user.username) + '" updated successfully!', 'success')
+                role.set_role(roles[i])
+
+    for i in range(len(usernames)):
+        print(usernames[i], roles[i])
+        user = get_user(usernames[i])
+
+        if not user:
+            flash('The username "' + str(usernames[i]) + '" does not exist!', 'danger')
+            return redirect(url_for('list_view', list_id=list_id))
+        if not get_role(user, list_id):
+            add_role(user, list_id, roles[i])
+            flash('"'+str(usernames[i])+'" added as a(n) "'+str(roles[i])+'" successfully!', 'success')
+
+    return redirect(url_for('list_view', list_id=list_id))
 
 
 # Deletes a list that the user doesn't own

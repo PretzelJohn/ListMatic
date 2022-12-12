@@ -18,6 +18,10 @@ class Roles(db.Model):
     user = db.relationship("Users", back_populates="lists")
     list = db.relationship("Lists", back_populates="users")
 
+    def set_role(self, role):
+        self.role = role
+        db.session.commit()
+
 
 class Users(db.Model, UserMixin):
     __tablename__ = "users"
@@ -95,6 +99,10 @@ def get_role(user, list_id):
     return db.session.query(Roles).filter_by(user_id=user.user_id).filter_by(list_id=list_id).first()
 
 
+def get_roles(list_id):
+    return db.session.query(Roles).filter_by(list_id=list_id)
+
+
 # List queries
 def __get_list_query(user, columns):
     return db.session.query(columns).join(Roles).filter(Roles.user_id == user.user_id)
@@ -134,7 +142,20 @@ def delete_list(user, list_id):
     db.session.commit()
 
 
+def add_role(user, list_id, role):
+    role = Roles(user_id=user.user_id, list_id=list_id, role=role)
+    db.session.add(role)
+    db.session.commit()
+
+
 def delete_role(user, list_id):
     role = get_role(user, list_id)
     db.session.delete(role)
+    db.session.commit()
+
+
+def delete_roles(list_id):
+    roles = get_roles(list_id)
+    for role in roles:
+        db.session.delete(role)
     db.session.commit()
