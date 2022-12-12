@@ -62,7 +62,7 @@ function addRow() {
 
     //Add text input
     const input = document.createElement("input");
-    input.setAttribute("class", "form-text w-100 flex-grow-1");
+    input.setAttribute("class", "form-text w-100 flex-grow-1 m-0 me-1");
     input.setAttribute("type", "text");
     input.setAttribute("placeholder", "...");
     cellContainer.appendChild(input);
@@ -70,7 +70,7 @@ function addRow() {
 
     //Add trash button
     const trash = document.createElement("button");
-    trash.setAttribute("class", "btn btn-danger btn-delete m-0 me-1");
+    trash.setAttribute("class", "btn btn-danger btn-delete m-0");
 
     const trashIcon = document.createElement("img");
     trashIcon.setAttribute("style", "scale: 1.5");
