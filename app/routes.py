@@ -36,7 +36,7 @@ def dashboard():
 def list_create(category):
     list_id = add_list(current_user, category)
     flash('You have created a new list!', 'success')
-    return redirect(url_for('list_view', category=category, list_id=list_id))
+    return redirect(url_for('list_view', list_id=list_id))
 
 
 # Shows a specific list

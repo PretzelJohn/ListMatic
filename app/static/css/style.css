@@ -122,6 +122,7 @@ html, body {
 
 .form-text {
 	border: none !important;
+	background: none !important;
 	padding: 10px;
 }
 
