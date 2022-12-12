@@ -56,101 +56,173 @@
 
                     <!-- Existing list cards -->
                     {% for list in get_lists(current_user, category) %}
-                        <div class="carousel-cell">
-                            <a class="link" href="{{ url_for('list_view', list_id=list.list_id) }}">
-                                <div class="card text-dark">
-                                    <div class="card-body">
-                                        <!-- List card body -->
-                                        <h1 class="card-title fs-6">
-                                            {% if list.title %}
-                                                {{ list.title }}
-                                            {% else %}
-                                                Title
-                                            {% endif %}
-                                        </h1>
+                        {% with role = get_role(current_user, list.list_id) %}
+                            {% if role and role.role in 'owner' %}
+                                <div class="carousel-cell">
+                                    <a class="link" href="{{ url_for('list_view', list_id=list.list_id) }}">
+                                        <div class="card text-dark">
+                                            <div class="card-body">
+                                                <!-- List card body -->
+                                                <h1 class="card-title fs-6">
+                                                    {% if list.title %}
+                                                        {{ list.title }}
+                                                    {% else %}
+                                                        Title
+                                                    {% endif %}
+                                                </h1>
 
-                                        <hr class="m-0 mb-2 p-0">
+                                                <hr class="m-0 mb-2 p-0">
 
-                                        <!-- List card body -->
-                                        <ul class="card-text fs-6">
-                                            {% for item in list.content %}
-                                                <li>{{ item }}</li>
-                                            {% endfor %}
+                                                <!-- List card body -->
+                                                <ul class="card-text fs-6">
+                                                    {% for item in list.content %}
+                                                        <li>{{ item }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </a>
+
+                                    <!-- List card options dropdown -->
+                                    <div class="dropdown card-dropdown float-end" style="width: 20px; height: 20px;">
+                                        <a class="dropdown-toggle p-2 w-100 h-100" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <img class="w-100 h-100" src="/static/img/options.svg"/>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end text-center fs-6" role="menu">
+                                            <li><a class="dropdown-item text-navy p-2 rounded-top" href="" data-bs-toggle="modal" data-bs-target="#change{{ list.list_id }}Modal">Change category</a></li>
+                                            <li><hr class="dropdown-divider text-navy m-auto w-75"></li>
+                                            <li><a class="dropdown-item text-navy p-2 rounded-bottom" href="" data-bs-toggle="modal" data-bs-target="#delete{{ list.list_id }}Modal">Delete</a></li>
                                         </ul>
                                     </div>
                                 </div>
-                            </a>
-
-                            <!-- List card options dropdown -->
-                            <div class="dropdown card-dropdown float-end" style="width: 20px; height: 20px;">
-                                <a class="dropdown-toggle p-2 w-100 h-100" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img class="w-100 h-100" src="/static/img/options.svg"/>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end text-center fs-6" role="menu">
-                                    <li><a class="dropdown-item text-navy p-2 rounded-top" href="" data-bs-toggle="modal" data-bs-target="#change{{ list.list_id }}Modal">Change category</a></li>
-                                    <li><hr class="dropdown-divider text-navy m-auto w-75"></li>
-                                    <li><a class="dropdown-item text-navy p-2 rounded-bottom" href="" data-bs-toggle="modal" data-bs-target="#delete{{ list.list_id }}Modal">Delete</a></li>
-                                </ul>
-                            </div>
-                        </div>
+                            {% endif %}
+                        {% endwith %}
                     {% endfor %}
                 </div>
 
                 <!-- MODALS -->
                 {% for list in get_lists(current_user, category) %}
-                    <div class="text-dark">
-                        <!-- CHANGE CATEGORY MODAL -->
-                        <div class="modal fade" id="change{{ list.list_id }}Modal" tabindex="-1" role="dialog" aria-labelledby="change{{ list.list_id }}ModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content text-start">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="change{{ list.list_id }}ModalLabel">Change list category</h5>
-                                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <form method="POST" action="{{ url_for('list_change', list_id=list.list_id) }}">
-                                        <div class="modal-body text-center">
-                                            <p class="text-start">Which category do you want to move the list to?</p>
-                                            <div class="" id="selectCategory-{{ list.list_id }}" onchange="
-                                                const button = document.getElementById('newCategory-{{ list.list_id }}');
-                                                const textbox = document.getElementById('newCategoryText-{{ list.list_id }}');
-                                                if(button.checked) {
-                                                    textbox.classList.remove('d-none');
-                                                    textbox.setAttribute('required', 'required');
-                                                } else {
-                                                    textbox.classList.add('d-none');
-                                                    textbox.removeAttribute('required');
-                                                }
-                                            ">
-                                                {% for category2 in categories %}
-                                                    {% if category2 == category %}
-                                                        <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2 }}" id="{{ category2 }}-{{ list.list_id }}" autocomplete="off" checked>
-                                                    {% else %}
-                                                        <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2 }}" id="{{ category2 }}-{{ list.list_id }}" autocomplete="off">
-                                                    {% endif %}
-                                                    <label class="btn btn-outline-primary h-auto mb-2" for="{{ category2 }}-{{ list.list_id }}">{{ category2 }}</label>
-                                                {% endfor %}
-                                                <input class="btn-check" type="radio" name="selectedCategory" value="new" id="newCategory-{{ list.list_id }}" autocomplete="off">
-                                                <label class="btn btn-outline-primary h-auto mb-2" for="newCategory-{{ list.list_id }}">Create New +</label>
+                    {% with role = get_role(current_user, list.list_id) %}
+                        {% if role and role.role in 'owner' %}
+                            <div class="text-dark">
+                                <!-- CHANGE CATEGORY MODAL -->
+                                <div class="modal fade" id="change{{ list.list_id }}Modal" tabindex="-1" role="dialog" aria-labelledby="change{{ list.list_id }}ModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content text-start">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="change{{ list.list_id }}ModalLabel">Change list category</h5>
+                                                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                            <input class="form-control mt-3 d-none" type="text" name="newCategoryText" id="newCategoryText-{{ list.list_id }}" placeholder="New category name" autocomplete="off">
+                                            <form method="POST" action="{{ url_for('list_change', list_id=list.list_id) }}">
+                                                <div class="modal-body text-center">
+                                                    <p class="text-start">Which category do you want to move the list to?</p>
+                                                    <div class="" id="selectCategory-{{ list.list_id }}" onchange="
+                                                        const button = document.getElementById('newCategory-{{ list.list_id }}');
+                                                        const textbox = document.getElementById('newCategoryText-{{ list.list_id }}');
+                                                        if(button.checked) {
+                                                            textbox.classList.remove('d-none');
+                                                            textbox.setAttribute('required', 'required');
+                                                        } else {
+                                                            textbox.classList.add('d-none');
+                                                            textbox.removeAttribute('required');
+                                                        }
+                                                    ">
+                                                        {% for category2 in categories %}
+                                                            {% if category2 == category %}
+                                                                <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2 }}" id="{{ category2 }}-{{ list.list_id }}" autocomplete="off" checked>
+                                                            {% else %}
+                                                                <input class="btn-check" type="radio" name="selectedCategory" value="{{ category2 }}" id="{{ category2 }}-{{ list.list_id }}" autocomplete="off">
+                                                            {% endif %}
+                                                            <label class="btn btn-outline-primary h-auto mb-2" for="{{ category2 }}-{{ list.list_id }}">{{ category2 }}</label>
+                                                        {% endfor %}
+                                                        <input class="btn-check" type="radio" name="selectedCategory" value="new" id="newCategory-{{ list.list_id }}" autocomplete="off">
+                                                        <label class="btn btn-outline-primary h-auto mb-2" for="newCategory-{{ list.list_id }}">Create New +</label>
+                                                    </div>
+                                                    <input class="form-control mt-3 d-none" type="text" name="newCategoryText" id="newCategoryText-{{ list.list_id }}" placeholder="New category name" autocomplete="off">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <input class="btn btn-primary" type="submit" value="Submit"/>
+                                                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                                                </div>
+                                            </form>
                                         </div>
-                                        <div class="modal-footer">
-                                            <input class="btn btn-primary" type="submit" value="Submit"/>
-                                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </form>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- DELETE LIST MODAL -->
-                        {% with id="delete"+str(list.list_id)+"Modal", header="Delete list", body='<p>Are you sure you want to <strong>delete this list</strong>? This action is irreversible.</p>', submit_action=url_for('list_delete', list_id=list.list_id), submit_color="danger", submit_text="Delete" %}
-                            {% include 'components/modal.html' %}
-                        {% endwith %}
-                    </div>
+                                <!-- DELETE LIST MODAL -->
+                                {% with id="delete"+str(list.list_id)+"Modal", header="Delete list", body='<p>Are you sure you want to <strong>delete this list</strong>? This action is irreversible.</p>', submit_action=url_for('list_delete', list_id=list.list_id), submit_color="danger", submit_text="Delete" %}
+                                    {% include 'components/modal.html' %}
+                                {% endwith %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
                 {% endfor %}
             </div>
         {% endfor %}
+
+        <div class="row category">
+            <h2 class="fs-4 mb-1">Shared with me</h2>
+
+            <!-- Flickity scrolling row -->
+            <div class="carousel" data-flickity='{ "cellAlign": "left", "groupCells": true, "freeScroll": true, "contain": true, "pageDots": false }'>
+                <!-- Existing list cards -->
+                {% for list in get_lists(current_user, category) %}
+                    {% with role = get_role(current_user, list.list_id) %}
+                        {% if role and role.role not in 'owner' %}
+                            <div class="carousel-cell">
+                                <a class="link" href="{{ url_for('list_view', list_id=list.list_id) }}">
+                                    <div class="card text-dark">
+                                        <div class="card-body">
+                                            <!-- List card body -->
+                                            <h1 class="card-title fs-6">
+                                                {% if list.title %}
+                                                    {{ list.title }}
+                                                {% else %}
+                                                    Title
+                                                {% endif %}
+                                            </h1>
+
+                                            <hr class="m-0 mb-2 p-0">
+
+                                            <!-- List card body -->
+                                            <ul class="card-text fs-6">
+                                                {% for item in list.content %}
+                                                    <li>{{ item }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- List card options dropdown -->
+                                <div class="dropdown card-dropdown float-end" style="width: 20px; height: 20px;">
+                                    <a class="dropdown-toggle p-2 w-100 h-100" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <img class="w-100 h-100" src="/static/img/options.svg"/>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end text-center fs-6" role="menu">
+                                        <li><a class="dropdown-item text-navy p-2 rounded-bottom" href="" data-bs-toggle="modal" data-bs-target="#delete{{ list.list_id }}Modal">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+            </div>
+
+            <!-- MODALS -->
+            {% for list in get_lists(current_user, category) %}
+                {% with role = get_role(current_user, list.list_id) %}
+                    {% if role and role.role not in 'owner' %}
+                        <div class="text-dark">
+                            <!-- DELETE LIST MODAL -->
+                            {% with id="delete"+str(list.list_id)+"Modal", header="Delete list", body='<p>Are you sure you want to <strong>delete this list</strong>? This action is irreversible.</p>', submit_action=url_for('role_delete', list_id=list.list_id), submit_color="danger", submit_text="Delete" %}
+                                {% include 'components/modal.html' %}
+                            {% endwith %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
+        </div>
     </div>
 
     <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>

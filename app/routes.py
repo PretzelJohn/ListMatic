@@ -6,7 +6,7 @@ from app.errors import not_found_error
 from app.models import *
 from app.s3 import s3_upload, s3_delete
 
-from flask import render_template, flash, redirect, url_for, request, send_file, make_response
+from flask import render_template, flash, redirect, url_for, request, make_response
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.urls import url_parse
 
@@ -27,7 +27,7 @@ def dashboard():
         categories = ["Default"]
     lists = get_lists(current_user)
 
-    return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists, str=str)
+    return render_template('dashboard.html', title='Home', lists=lists, categories=categories, get_lists=get_lists, get_role=get_role, str=str)
 
 
 # Creates a new category
@@ -63,6 +63,10 @@ def list_update(list_id):
     if request.method != 'POST':
         return redirect(url_for('list_view', list_id=list_id))
 
+    role = get_role(current_user, list_id)
+    if role and role.role not in ['owner', 'editor']:
+        return redirect(url_for('list_view', list_id=list_id))
+
     try:
         data = request.get_json()
         list = get_list(current_user, list_id)
@@ -78,6 +82,10 @@ def list_update(list_id):
 @login_required
 def list_change(list_id):
     if request.method != 'POST':
+        return redirect(url_for('dashboard'))
+
+    role = get_role(current_user, list_id)
+    if role and role.role not in ['owner', 'editor']:
         return redirect(url_for('dashboard'))
 
     category = request.form.get("selectedCategory")
@@ -105,7 +113,27 @@ def list_delete(list_id):
     if request.method != 'POST':
         return redirect(url_for('dashboard'))
 
+    role = get_role(current_user, list_id)
+    if role and role.role not in 'owner':
+        return redirect(url_for('dashboard'))
+
     delete_list(current_user, list_id)
+    flash('You have deleted the list!', 'success')
+    return redirect(url_for('dashboard'))
+
+
+# Deletes a list that the user doesn't own
+@app.route('/<int:list_id>/delete_role', methods=['GET', 'POST'])
+@login_required
+def role_delete(list_id):
+    if request.method != 'POST':
+        return redirect(url_for('dashboard'))
+
+    role = get_role(current_user, list_id)
+    if role and role.role in 'owner':
+        return redirect(url_for('dashboard'))
+
+    delete_role(current_user, list_id)
     flash('You have deleted the list!', 'success')
     return redirect(url_for('dashboard'))
 

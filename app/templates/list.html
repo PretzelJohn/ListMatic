@@ -6,7 +6,12 @@
 {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" type="text/css" href="/static/css/list.css" crossorigin="anonymous" xmlns="http://www.w3.org/1999/html">
+    <link rel="stylesheet" type="text/css" href="/static/css/list.css" crossorigin="anonymous" xmlns="http://www.w3.org/1999/html">
+
+    {% if role in ['owner', 'editor'] %}
+        <script src="/static/js/drag.js" type="text/javascript"></script>
+    {% endif %}
+
 
     <div class="container-fluid">
         <div class="row text-start link-back">
@@ -17,49 +22,70 @@
 
         <div class="row row-cols-1 row-cols-xl-2">
             <div class="col mb-5">
-                <div class="d-flex flex-row mb-4">
-                    <input id="titleText" class="form-text w-100 text-navy fs-1 fw-bold flex-grow-1 m-0 me-3" type="text" placeholder="Title" value="{{ list.title }}" autocomplete="off"/>
-                    <button id="saveBtn" class="btn btn-lg btn-navy text-white fs-6 arial">Save</button>
+                <div class="hstack mb-4">
+                    {% if role in ['owner', 'editor'] %}
+                        <input id="titleText" class="form-text w-100 text-navy fs-1 fw-bold flex-grow-1 m-0 me-1" type="text" placeholder="Title" value="{{ list.title }}" autocomplete="off"/>
+                        <button id="saveBtn" class="btn btn-lg btn-navy text-white fs-6 arial">Save</button>
+                    {% else %}
+                        <input id="titleText" class="form-text w-100 text-navy fs-1 fw-bold flex-grow-1 m-0 me-1" type="text" placeholder="Title" value="{{ list.title }}" autocomplete="off" disabled/>
+                    {% endif %}
                 </div>
 
-                <table class="table table-borderless table-striped shadow">
-                    <tbody id="contentContainer" class="w-100">
-                        {% if not list.content %}
-                            <tr class="d-flex flex-row">
-                                <td class="flex-grow-1">
-                                    <input class="form-text w-100" type="text" placeholder="...">
-                                </td>
-                                <td>
-                                    <button class="btn btn-danger btn-delete" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);">
-                                        <img style="scale: 1.5;" src="/static/img/trash.svg"/>
-                                    </button>
-                                </td>
-                            </tr>
-                        {% endif %}
+                <table class="table table-responsive table-borderless table-striped shadow w-100">
+                    <thead></thead>
+                    <tbody id="contentContainer">
                         {% for item in list.content %}
-                            <tr class="d-flex flex-row">
-                                <td class="flex-grow-1">
-                                    <input class="form-text w-100" type="text" placeholder="..." value="{{ item }}"/>
-                                </td>
-                                <td>
-                                    <button class="btn btn-danger btn-delete" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);">
-                                        <img style="scale: 1.5;" src="/static/img/trash.svg"/>
-                                    </button>
-                                </td>
+                            <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()" ondrop="dragdrop()">
+                                {% if role in ['owner', 'editor'] %}
+                                    <td class="hstack p-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#333" class="bi bi-grip-vertical" viewBox="0 0 16 16">
+                                            <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                        </svg>
+                                        <input class="form-text w-100 flex-grow-1" type="text" placeholder="..." value="{{ item }}"/>
+                                        <button class="btn btn-danger btn-delete m-0 me-1" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);">
+                                            <img style="scale: 1.5;" src="/static/img/trash.svg"/>
+                                        </button>
+                                    </td>
+                                {% else %}
+                                    <td class="flex-grow-1">
+                                        <input class="form-text w-100" type="text" placeholder="..." value="{{ item }}" disabled/>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
+
+                        {% if not list.content %}
+                            <tr class="hstack">
+                                {% if role in ['owner', 'editor'] %}
+                                    <td class="flex-grow-1">
+                                        <input class="form-text w-100" type="text" placeholder="...">
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger btn-delete" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);">
+                                            <img style="scale: 1.5;" src="/static/img/trash.svg"/>
+                                        </button>
+                                    </td>
+                                {% else %}
+                                    <td class="flex-grow-1">
+                                        <input class="form-text w-100" type="text" placeholder="..." disabled>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
 
-                <div class="text-center mt-3">
-                    <button id="addBtn" class="btn btn-green rounded-pill p-1 pe-3 d-inline fs-6 arial text-white align-middle">
-                        <img src="/static/img/plus.svg" width="40px" height="40px"/>
-                        Add new row
-                    </button>
-                </div>
+                {% if role in ['owner', 'editor'] %}
+                    <div class="text-center mt-3">
+                        <button id="addBtn" class="btn btn-green rounded-pill p-1 pe-3 d-inline fs-6 arial text-white align-middle">
+                            <img src="/static/img/plus.svg" width="40px" height="40px"/>
+                            Add new row
+                        </button>
+                    </div>
+                {% endif %}
             </div>
             <div class="col text-center">
-                {% if role in "owner" %}
+                {% if role in 'owner' %}
                     <button class="btn btn-lg btn-navy text-white mw-100 fs-6 arial" type="button" data-bs-toggle="modal" data-bs-target="#inviteModal">
                         Invite Friends & Family
                     </button>
@@ -71,9 +97,13 @@
         </div>
     </div>
 
-    {% with id="inviteModal", header="Manage access", body="", submit_action="", submit_color="primary", submit_text="Submit" %}
-		{% include 'components/modal.html' %}
-	{% endwith %}
+    {% if role in 'owner' %}
+        {% with id="inviteModal", header="Manage access", body="<p>Test</p>", submit_action="", submit_color="primary", submit_text="Submit" %}
+            {% include 'components/modal.html' %}
+        {% endwith %}
+    {% endif %}
 
-    <script src="/static/js/list.js" type="text/javascript"></script>
+    {% if role in ['owner', 'editor'] %}
+        <script src="/static/js/list.js" type="text/javascript"></script>
+    {% endif %}
 {% endblock %}

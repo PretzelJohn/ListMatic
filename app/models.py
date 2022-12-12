@@ -132,3 +132,9 @@ def delete_list(user, list_id):
         return
     db.session.delete(list)
     db.session.commit()
+
+
+def delete_role(user, list_id):
+    role = get_role(user, list_id)
+    db.session.delete(role)
+    db.session.commit()
