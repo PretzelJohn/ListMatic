@@ -9,18 +9,20 @@ addBtn.addEventListener('click', addRow);
 
 const focusable = document.querySelectorAll(".focusable");
 focusable.forEach((e) => {
-    e.addEventListener('keydown', (event) => {
-        if(event.keyCode === 13) {
-            const next = e.parentNode.parentNode.nextSibling.nextSibling;
-            if(next == null) {
-                addRow();
-            } else {
-                const nextInput = next.firstChild.nextSibling.firstChild.nextSibling.nextSibling.nextSibling;
-                if(nextInput != null) nextInput.focus();
-            }
-        }
-    });
+    e.addEventListener('keydown', next);
 });
+
+function next() {
+    if(event.keyCode === 13) {
+        const next = event.target.parentNode.parentNode.nextSibling;
+        if(next == null || next.nextSibling == null) {
+            addRow();
+        } else {
+            const nextInput = next.nextSibling.firstChild.nextSibling.firstChild.nextSibling.nextSibling.nextSibling;
+            if(nextInput != null) nextInput.focus();
+        }
+    }
+}
 
 //Saves the list
 function save() {
@@ -80,6 +82,8 @@ function addRow() {
     input.setAttribute("class", "focusable form-text w-100 flex-grow-1 m-0 me-1");
     input.setAttribute("type", "text");
     input.setAttribute("placeholder", "...");
+    input.setAttribute("value", "");
+    input.addEventListener('keydown', next);
     cellContainer.appendChild(input);
 
 
