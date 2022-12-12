@@ -42,8 +42,8 @@ function addRow() {
     const container = document.createElement("tr");
     container.setAttribute("draggable", "true");
     container.setAttribute("ondragstart", "dragstart()");
-    container.setAttribute("ondragover", "dragover()");
-    container.setAttribute("ondrop", "dragdrop()");
+    container.setAttribute("ondragover", "dragmove()");
+    container.setAttribute("ondragend", "dragend()");
 
     const cellContainer = document.createElement("td");
     cellContainer.setAttribute("class", "hstack p-1");

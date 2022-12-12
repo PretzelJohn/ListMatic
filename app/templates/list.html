@@ -35,9 +35,9 @@
                     <thead></thead>
                     <tbody id="contentContainer">
                         {% for item in list.content %}
-                            <tr draggable="true" ondragstart="dragstart()" ondragover="dragover()" ondrop="dragdrop()">
-                                {% if role in ['owner', 'editor'] %}
-                                    <td class="hstack p-1">
+                            <tr draggable="true" ondragstart="dragstart()" ondragover="dragmove()" ondragend="dragend()">
+                                <td class="hstack p-1">
+                                    {% if role in ['owner', 'editor'] %}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#333" class="bi bi-grip-vertical" viewBox="0 0 16 16">
                                             <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                         </svg>
@@ -45,12 +45,10 @@
                                         <button class="btn btn-danger btn-delete m-0 me-1" onclick="this.parentElement.parentElement.parentElement.removeChild(this.parentElement.parentElement);">
                                             <img style="scale: 1.5;" src="/static/img/trash.svg"/>
                                         </button>
-                                    </td>
-                                {% else %}
-                                    <td class="flex-grow-1">
-                                        <input class="form-text w-100" type="text" placeholder="..." value="{{ item }}" disabled/>
-                                    </td>
-                                {% endif %}
+                                    {% else %}
+                                        <input class="form-text w-100 flex-grow-1" type="text" placeholder="..." value="{{ item }}" disabled/>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
 

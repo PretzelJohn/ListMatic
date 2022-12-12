@@ -6,11 +6,11 @@ function dragstart() {
   row = event.target;
 }
 
-function dragover() {
+function dragmove() {
   let e = event;
   e.preventDefault();
 
-  if(e.target.parentNode.nodeName === "TR" && row.nodeName == "TR") {
+  if(e.target.parentNode.nodeName === "TR" && row.nodeName === "TR") {
     children = Array.from(e.target.parentNode.parentNode.children);
 
 
@@ -24,6 +24,6 @@ function dragover() {
   }
 }
 
-function dragdrop() {
+function dragend() {
   row.style.background = "none";
 }
