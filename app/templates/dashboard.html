@@ -36,7 +36,7 @@
                 <h2 class="fs-4 mb-1">{{ category }}</h2>
 
                 <!-- Flickity scrolling row -->
-                <div class="carousel" data-flickity='{ "cellAlign": "left", "groupCells": true, "freeScroll": true, "contain": true, "pageDots": false }'>
+                <div class="carousel" data-flickity='{ "cellAlign": "left", "groupCells": true, "freeScroll": true, "contain": true, "pageDots": false, "watchCSS": true }'>
                     <!-- Create list card -->
                     <div class="carousel-cell">
                         <div class="card text-dark">
@@ -164,7 +164,7 @@
             <h2 class="fs-4 mb-1">Shared with me</h2>
 
             <!-- Flickity scrolling row -->
-            <div class="carousel" data-flickity='{ "cellAlign": "left", "groupCells": true, "freeScroll": true, "contain": true, "pageDots": false }'>
+            <div class="carousel" data-flickity='{ "cellAlign": "left", "groupCells": true, "freeScroll": true, "contain": true, "pageDots": false, "watchCSS": true }'>
                 <!-- Existing list cards -->
                 {% for list in get_lists(current_user, category) %}
                     {% with role = get_role(current_user, list.list_id) %}

@@ -42,3 +42,22 @@
 .carousel-cell {
     margin-right: 2.4%;
 }
+
+.carousel:after {
+    content: 'flickity';
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    .carousel:after {
+        content: '';
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .carousel-cell {
+        margin-right: 0;
+    }
+}
