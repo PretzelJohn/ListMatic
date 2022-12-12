@@ -7,6 +7,21 @@ const addBtn = document.getElementById("addBtn");
 saveBtn.addEventListener('click', save);
 addBtn.addEventListener('click', addRow);
 
+const focusable = document.querySelectorAll(".focusable");
+focusable.forEach((e) => {
+    e.addEventListener('keydown', (event) => {
+        if(event.keyCode === 13) {
+            const next = e.parentNode.parentNode.nextSibling.nextSibling;
+            if(next == null) {
+                addRow();
+            } else {
+                const nextInput = next.firstChild.nextSibling.firstChild.nextSibling.nextSibling.nextSibling;
+                if(nextInput != null) nextInput.focus();
+            }
+        }
+    });
+});
+
 //Saves the list
 function save() {
     let arr = [];
@@ -62,7 +77,7 @@ function addRow() {
 
     //Add text input
     const input = document.createElement("input");
-    input.setAttribute("class", "form-text w-100 flex-grow-1 m-0 me-1");
+    input.setAttribute("class", "focusable form-text w-100 flex-grow-1 m-0 me-1");
     input.setAttribute("type", "text");
     input.setAttribute("placeholder", "...");
     cellContainer.appendChild(input);
